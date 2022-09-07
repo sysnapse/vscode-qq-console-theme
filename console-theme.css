@@ -1,0 +1,72 @@
+body {
+    padding: 0;
+}
+pre {
+    padding: 0 10px;
+    margin: 0;
+}
+#container{
+    width: 100%;
+}
+#console{
+    border: 5px solid var(--vscode-editor-background);
+    background-color: var(--vscode-sideBar-background);
+    box-sizing: border-box;
+    min-height: 500px;
+    padding: 5px;
+    overflow-x: hidden;
+}
+a {
+    color: inherit;
+}
+a:hover {
+    color: gray;
+}
+.sticky-box{
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    padding-bottom: 5px;
+    background-color: var(--vscode-sideBar-background);
+}
+#commandline{
+    border: 5px solid var(--vscode-editor-background);
+    background-color: var(--vscode-sideBar-background);
+    line-height: 24px;
+    width: 100%;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: var(--vscode-editor-foreground);
+}
+#commandline.sending{
+    color: gray;
+}
+.cmsg {
+    margin-bottom: 5px;
+}
+.cmsg pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.box {
+    max-height: 80vh;
+    max-width: 90vw;
+    overflow-y: auto;
+    background-color: var(--vscode-editor-background);
+    max-height: 240px;
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 25px;
+    padding: 5px;
+    border: solid 1px var(--vscode-editor-foreground);
+    font-size: 20px;
+}
+.stamp-box img {
+    margin:5px;
+    cursor:pointer;
+    max-width:68px;
+    max-height:68px;
+    min-width:68px;
+    vertical-align: middle;
+}
