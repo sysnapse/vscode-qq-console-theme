@@ -604,9 +604,12 @@ Object.assign(jsonCardHandler, {
     'com.tencent.miniapp_01': (data) => {
         const { desc: title, preview, qqdocurl: url, title: platform } = data.meta.detail_1
         const btn = `<a href="javascript:void(0)" onclick="javascript:var s=this.nextElementSibling.style;if(s.display=='block')s.display='none';else s.display='block'">[${platform}分享]</a>`
+
+        const img = preview.startsWith('http') ? preview : `https://${preview}`
+        
         const content = `<span style="display:none;">
 <a href="${url}" target="_blank">${title}</a><br>
-<a href="https://${preview}" target="_blank" onmouseenter="previewImage(this,0,0)">[封面]</a>
+<a href="${img}" target="_blank" onmouseenter="previewImage(this,0,0)">[封面]</a>
         </span>`
         return `${btn}${content}`
     },
