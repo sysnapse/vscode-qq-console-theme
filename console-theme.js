@@ -11,6 +11,10 @@ let nick = webview.nickname;
 let facePath = webview.faces_path;
 
 
+const jsonCardHandler = {};
+const xmlCardHandler = {};
+
+
 let keepBottom = false;
 
 // 监听消息和通知
@@ -65,7 +69,7 @@ for (let i = 0; i <= 324; ++i) {
         continue;
     }
     ++tmpFaceStep;
-    let html = `<img onclick="addFace(${i})" style="margin:5px;cursor:pointer" width="28" height="28" src="${facePath+i+".png"}">`;
+    let html = `<img onclick="addFace(${i})" style="margin:5px;cursor:pointer" width="28" height="28" src="${facePath + i + ".png"}">`;
     document.querySelector('.face-box').insertAdjacentHTML("beforeend", html);
 }
 
@@ -127,21 +131,21 @@ function getChatHistory(message_id = "", count = 20, scrollEnd = true) {
     webview.getChatHistory(message_id, count).then((data) => {
         let html = "";
         for (let msg of data.data) {
-            if (checkMessageElementExist(msg.message_id)){
+            if (checkMessageElementExist(msg.message_id)) {
                 continue;
             }
             html += genUserMessage(msg);
         }
         document.querySelector("#console").insertAdjacentHTML("afterbegin", html);
-        if (scrollEnd){
+        if (scrollEnd) {
             webview.scrollEnd();
         }
     });
 }
 
-function checkMessageElementExist(id){
-    for (const cmsg of document.querySelectorAll(".cmsg")){
-        if (cmsg?.attributes.id.value == id){
+function checkMessageElementExist(id) {
+    for (const cmsg of document.querySelectorAll(".cmsg")) {
+        if (cmsg?.attributes.id.value == id) {
             return true;
         }
     }
@@ -284,7 +288,7 @@ function genUserMessage(data) {
  * 加入at元素到输入框
  * @param {number|"all"} uid 
  */
- function addAt(uid) {
+function addAt(uid) {
     if (c2c) {
         return;
     }
@@ -292,7 +296,7 @@ function genUserMessage(data) {
     appendToTextArea(cqcode);
 }
 
-function addReply(id){
+function addReply(id) {
     if (c2c) return;
     const cqcode = `[CQ:reply,id=${id}]`
     appendToTextArea(cqcode);
@@ -367,14 +371,15 @@ function parseMessage(message) {
                 break;
             case "json":
                 try {
+
                     const jsonObj = JSON.parse(v.data.data);
-                    if (jsonObj["app"] === "com.tencent.mannounce") { //判断是否为群公告
-                        const title = decodeURIComponent(escape(atob(jsonObj["meta"]["mannounce"]["title"])));
-                        const content = decodeURIComponent(escape(atob(jsonObj["meta"]["mannounce"]["text"])));
-                        msg = `<span class="jsonMsgTitle">${filterXss(title)}</span><br/><span class="jsonMsgContent">${filterXss(content)}</span><br/>`;
+
+                    if (jsonCardHandler[jsonObj.app] instanceof Function){
+                        msg = jsonCardHandler[jsonObj.app](jsonObj)
                     } else {
                         msg = `<a href="javascript:void(0)" onclick="javascript:var s=this.nextElementSibling.style;if(s.display=='block')s.display='none';else s.display='block'">[JSON卡片消息]</a><span style="display:none">${filterXss(JSON.stringify(jsonObj, null, 4))}</span>`;
                     }
+
                 } catch { }
                 break;
             case "file":
@@ -407,7 +412,7 @@ function parseMessage(message) {
  * 转义message_id中的特殊字符
  * @param {string} message_id 
  */
- function filterMsgIdSelector(message_id) {
+function filterMsgIdSelector(message_id) {
     return message_id.replace(/\//g, "\\/").replace(/\=/g, "\\=").replace(/\+/g, "\\+");
 }
 
@@ -488,12 +493,12 @@ document.querySelector("#commandline").addEventListener("paste", async ev => {
  * 加入图片到输入框
  * @param {string} file 
  */
- function addImage(file) {
+function addImage(file) {
     const cqcode = `[CQ:image,file=${file},type=face]`;
     appendToTextArea(cqcode);
 }
 
-function appendToTextArea(str){
+function appendToTextArea(str) {
     const area = document.querySelector("#commandline");
     area.value += str;
     area.focus();
@@ -548,10 +553,10 @@ function triggerForwardMsg(obj) {
     }
     if (elememt.innerHTML === "" || elememt.innerHTML === "加载失败") {
         elememt.innerHTML = "...";
-        webview.getForwardMsg(resid).then(data=>{
+        webview.getForwardMsg(resid).then(data => {
             let html = "";
             for (let v of data.data) {
-                html +=  `<p>👤${filterXss(v.nickname)}(${v.user_id}) ${datetime(v.time)}</p>${parseMessage(v.message)}`;
+                html += `<p>👤${filterXss(v.nickname)}(${v.user_id}) ${datetime(v.time)}</p>${parseMessage(v.message)}`;
             }
             if (!html) {
                 html = "加载失败";
@@ -584,3 +589,36 @@ window.onkeydown = function (event) {
     }
 };
 
+
+// ========= JSON Card Handlers ===========
+
+Object.assign(jsonCardHandler, {
+
+    'com.tencent.mannounce': (data) => {
+        const mannounce = data.meta.mannounce
+        const title = decodeURIComponent(escape(atob(mannounce.title)));
+        const content = decodeURIComponent(escape(atob(mannounce.text)));
+        return `<span class="jsonMsgTitle">${filterXss(title)}</span><br/><span class="jsonMsgContent">${filterXss(content)}</span><br/>`;
+    },
+
+    'com.tencent.miniapp_01': (data) => {
+        const { desc: title, preview, qqdocurl: url, title: platform } = data.meta.detail_1
+        const btn = `<a href="javascript:void(0)" onclick="javascript:var s=this.nextElementSibling.style;if(s.display=='block')s.display='none';else s.display='block'">[${platform}分享]</a>`
+        const content = `<span style="display:none;">
+<a href="${url}" target="_blank">${title}</a><br>
+<a href="https://${preview}" target="_blank" onmouseenter="previewImage(this,0,0)">[封面]</a>
+        </span>`
+        return `${btn}${content}`
+    },
+
+    'com.tencent.structmsg': (data) => {
+        const { title, preview, jumpUrl: url, desc: platform } = data.meta.news
+        const btn = `<a href="javascript:void(0)" onclick="javascript:var s=this.nextElementSibling.style;if(s.display=='block')s.display='none';else s.display='block'">[${platform}分享]</a>`
+        const content = `<span style="display:none;">
+<a href="${url}" target="_blank">${title}</a><br>
+<a href="${preview}" target="_blank" onmouseenter="previewImage(this,0,0)">[封面]</a>
+        </span>`
+        return `${btn}${content}`
+    },  
+
+})
