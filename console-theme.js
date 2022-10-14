@@ -615,10 +615,11 @@ Object.assign(jsonCardHandler, {
     },
 
     'com.tencent.structmsg': (data) => {
-        const { title, preview, jumpUrl: url, desc: platform } = data.meta.news
-        const btn = `<a href="javascript:void(0)" onclick="javascript:var s=this.nextElementSibling.style;if(s.display=='block')s.display='none';else s.display='block'">[${platform}分享]</a>`
+        const prompt = data.prompt
+        const { title, preview, jumpUrl: url, tag: platform, desc } = data.meta.news
+        const btn = `<a href="javascript:void(0)" onclick="javascript:var s=this.nextElementSibling.style;if(s.display=='block')s.display='none';else s.display='block'">${prompt}[${platform}]</a>`
         const content = `<span style="display:none;">
-<a href="${url}" target="_blank">${title}</a><br>
+<a href="${url}" target="_blank">${title}</a>${title == desc ? '' : `<h5>${desc}</h5>`}<br>
 <a href="${preview}" target="_blank" onmouseenter="previewImage(this,0,0)">[封面]</a>
         </span>`
         return `${btn}${content}`
