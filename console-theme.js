@@ -169,7 +169,7 @@ function sendMsg() {
     const commandLine = document.querySelector("#commandline");
 
     let message = commandLine.value;
-    if (sending || !message) {
+    if (sending || !message || !message.replaceAll('\n', '')) {
         return;
     }
     sending = true;
@@ -348,6 +348,7 @@ function parseMessage(message) {
                 msg = `<a href="${v.data.url}" target="_blank">语音消息</a>`;
                 break;
             case "video":
+                console.log(v.data)
                 msg = `<a href="${v.data.url}" target="_blank">视频消息</a>`;
                 break;
             case "xml":
@@ -584,7 +585,10 @@ function datetime(unixstamp) {
 
 // Ctrl+Enter
 window.onkeydown = function (event) {
-    if (event.ctrlKey && event.keyCode === 13) {
+    if (event.keyCode !== 13) return;
+    if (event.shiftKey) {
+       commandLine.value += '\n' 
+    } else {
         sendMsg();
     }
 };
