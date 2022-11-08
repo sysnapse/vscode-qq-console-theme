@@ -580,7 +580,8 @@ function triggerForwardMsg(obj) {
             =========================
             `;
         }).catch(err => {
-            elememt.innerHTML = err;
+            console.error(err)
+            elememt.innerHTML = err.message ? err.message : err;
         });
     }
 }
