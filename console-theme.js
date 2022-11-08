@@ -491,6 +491,16 @@ document.querySelector("#commandline").addEventListener("paste", async ev => {
 })
 
 /**
+ * 加入表情到输入框
+ * @param {number} id 
+ */
+ function addFace(id) {
+    const cqcode = `[CQ:face,id=${id}]`;
+    appendToTextArea(cqcode);
+}
+
+
+/**
  * 加入图片到输入框
  * @param {string} file 
  */
