@@ -345,11 +345,12 @@ function parseMessage(message) {
                 msg += `<a href="${v.data.url}&file=${v.data.file}&vscodeDragFlag=1" target="_blank" onmouseenter="previewImage(this,${width},${height})">${v.type === "image" ? "图片" : "闪照"}</a>`;
                 break;
             case "record":
+                // 语音消息不支援HTML播放, 因为HTML不支援 .amr / .silk 格式 
                 msg = `<a href="${v.data.url}" target="_blank">语音消息</a>`;
                 break;
             case "video":
                 console.log(v.data)
-                msg = `<a href="${v.data.url}" target="_blank">视频消息</a>`;
+                msg = `<a href="javascript:void(0)" onclick="javascript:var s=this.nextElementSibling.style;if(s.display=='block')s.display='none';else s.display='block'">[视频消息]</a><video height=200 style="display:none" src="${v.data.url}" controls />`;
                 break;
             case "xml":
                 const dom = new DOMParser().parseFromString(v.data.data, "text/xml");
@@ -594,7 +595,7 @@ function datetime(unixstamp) {
     return webview.datetime(unixstamp);
 }
 
-// Ctrl+Enter
+// Enter
 window.onkeydown = function (event) {
     if (event.keyCode !== 13) return;
     if (event.shiftKey) {
