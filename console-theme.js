@@ -567,11 +567,12 @@ function triggerForwardMsg(obj) {
         elememt.innerHTML = "...";
         webview.getForwardMsg(resid).then(data => {
             let html = "";
+            console.debug(data.data)
             for (let v of data.data) {
                 html += `<p>👤${filterXss(v.nickname)}(${v.user_id}) ${datetime(v.time)}</p>${parseMessage(v.message)}`;
             }
             if (!html) {
-                html = "加载失败";
+                html = "加载失败。原信息: "+JSON.stringify(data);
             }
             elememt.innerHTML = `
             =========================
@@ -582,7 +583,7 @@ function triggerForwardMsg(obj) {
             `;
         }).catch(err => {
             console.error(err)
-            elememt.innerHTML = err.message ? err.message : err;
+            elememt.innerHTML = `加载错误: ${err.message ? err.message : err}`;
         });
     }
 }
