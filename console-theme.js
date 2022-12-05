@@ -275,12 +275,12 @@ function filterXss(str) {
 function genUserMessage(data) {
     console.debug(data)
     return `<div class="cmsg" id="${data.message_id}">
-     <span class="name" ondblclick="addAt(${data.user_id})">
+     <span class="name">
          <font color="green">[INFO]</font>
-         - ${webview.datetime(data.time)} - ${data.user_id} - 
-         ${getShortedName(data.sender)}:
+         - ${webview.datetime(data.time)} - <span ondblclick="addAt(${data.user_id})">${data.user_id} - 
+         ${getShortedName(data.sender)}</span>:
      </span><br>
-     <pre ondblclick="addReply('${data.message_id}')" class="content">${parseMessage(data.message)}</pre>
+     <pre class="content" ondblclick="addReply('${data.message_id}')">${parseMessage(data.message)}</pre>
  </div>`;
 }
 
