@@ -310,6 +310,12 @@ function getShortedName(sender) {
 }
 
 
+const fingers = {
+    1: '石头',
+    2: '剪刀',
+    3: '布',
+}
+
 function parseMessage(message) {
     let msg = "";
     for (let v of message) {
@@ -394,10 +400,11 @@ function parseMessage(message) {
                 msg += `<a href="#${v.data.id}" onclick="document.querySelector('#${filterMsgIdSelector(v.data.id).replace(/\\/g, "\\\\")}')?.animate([{'background':'#cccccc'}],{duration: 3000})">[回复]</a>`;
                 break;
             case "rps":
-                msg += "[猜拳]";
+                msg += `[猜拳: ${fingers[v.data.id] ?? v.data.id}]`;
+                console.log(message)
                 break;
             case "dice":
-                msg += "[骰子]";
+                msg += `[骰子: ${v.data.id}]`;
                 break;
             case "shake":
                 msg = "[窗口抖动]";
