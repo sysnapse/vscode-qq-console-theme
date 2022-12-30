@@ -280,7 +280,7 @@ function genUserMessage(data) {
          - ${webview.datetime(data.time)} - <span ondblclick="addAt(${data.user_id})">${data.user_id} - 
          ${getShortedName(data.sender)}</span>:
      </span><br>
-     <pre class="content" ondblclick="addReply('${data.message_id}')">${parseMessage(data.message)}</pre>
+     <pre class="content" ondblclick="addReply('${data.message_id}'); addAt(${data.user_id});">${parseMessage(data.message)}</pre>
  </div>`;
 }
 
